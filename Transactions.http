@@ -1,0 +1,11 @@
+GET https://api.delbank.com.br/baas/api/v2/transactions
+?limit=9999999
+&isCredit=true
+x-delbank-api-key: Ic0q N8fw7g5Yang0QlcAQqknmOGungc2dJlvDsjQ6UjsDvurf8PLHyku2KpLmtLxAMgSM2StLQa+eSLh3ieiQHXb9PZLZ1YMevjwa1op+S0/tgOBdEi66vXINbPKtfIr
+
+###
+
+GET https://api.delbank.com.br/baas/api/v2/transactions
+?limit=9999999
+&isCredit=false
+x-delbank-api-key: Ic0q N8fw7g5Yang0QlcAQqknmOGungc2dJlvDsjQ6UjsDvurf8PLHyku2KpLmtLxAMgSM2StLQa+eSLh3ieiQHXb9PZLZ1YMevjwa1op+S0/tgOBdEi66vXINbPKtfIr
