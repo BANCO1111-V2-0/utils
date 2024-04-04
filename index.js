@@ -1,20 +1,57 @@
-const outs = require("./saidas.json");
-const ins = require("./entradas.json");
+const axios = require('axios');
+require('dotenv').config();
 
-var acumuladoIns = 0;
-var acumuladoOuts = 0;
-var diferenca = 0;
+const startDate = process.env.START_DATE;
+const endDate = process.env.END_DATE;
 
-for (var i = 0; i < outs.length; i++) {
-  acumuladoOuts += outs[i].amount;
-}
+const params = {
+    startDate,
+    endDate,
+    page: 1,
+    limit: 99999
+};
 
-for (var i = 0; i < ins.length; i++) {
-  acumuladoIns += ins[i].amount;
-}
+const headers = {
+    'x-delbank-api-key': process.env.DELBANK_API_KEY
+};
 
-diferenca = acumuladoIns - acumuladoOuts;
+axios.get('https://api.delbank.com.br/baas/api/v2/transactions', { params, headers })
+    .then(response => {
+        const entradas = [];
+        const saidas = [];
+        let valorTotalEntradas = 0;
+        let valorTotalSaidas = 0;
 
-console.log("Acumulado entrada: " + acumuladoIns.toFixed(2).replace(".", ","));
-console.log("Acumulado saída: " + acumuladoOuts.toFixed(2).replace(".", ","));
-console.log("Diferença: " + diferenca.toFixed(2).replace(".", ","));
+        response.data.forEach(transacao => {
+            const transacaoFormatada = {
+                valor: transacao.amount,
+                status: transacao.status,
+                tipo: transacao.type.name,
+                nome: transacao.type.description,
+                descricao: transacao.description,
+                isCredit: transacao.type.isCredit
+            };
+
+            if (transacaoFormatada.isCredit) {
+                entradas.push(transacaoFormatada);
+                valorTotalEntradas += transacao.amount;
+            } else {
+                saidas.push(transacaoFormatada);
+                valorTotalSaidas += transacao.amount;
+            }
+        });
+
+        console.log("Entradas:");
+        console.log(entradas);
+
+        console.log("Valor Total de Entradas (antes do toFixed): " + valorTotalEntradas);
+        console.log("Valor Total de Entradas (após toFixed): " + valorTotalEntradas.toFixed(2));
+
+        console.log("Saídas:");
+        console.log(saidas);
+        console.log("Valor Total de Saídas: " + valorTotalSaidas.toFixed(2));
+        console.log("Valor Total de Entradas: " + valorTotalEntradas.toFixed(2)); // Corrigido para mostrar o valor total de entradas
+    })
+    .catch(error => {
+        console.error('Erro ao fazer a solicitação:', error);
+    });
